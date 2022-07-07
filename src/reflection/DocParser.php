@@ -5,13 +5,11 @@ namespace Shiroi\ThinkReflectionAnnotation\reflection;
 /**
  * Parses the PHPDoc comments for metadata. Inspired by Documentor code base
  * @category   Framework
- * @package    restler
+ * @package    DocParser
  * @subpackage helper
- * @author     Murray Picton <info@murraypicton.com>
- * @author     R.Arul Kumaran <arul@luracast.com>
- * @copyright  2010 Luracast
- * @license    http://www.gnu.org/licenses/ GNU General Public License
- * @link       https://github.com/murraypicton/Doqumentor
+ * @author     shiroi <707305003@qq.com>
+ * @copyright  2022 Luracast
+ * @link       https://github.com/hcr707305003/think-reflection-annotation
  */
 class DocParser
 {
@@ -29,12 +27,13 @@ class DocParser
         // Get all the lines and strip the * from the first character
         if (preg_match_all('#^\s*\*(.*)#m', $comment, $lines) === false)
             return $this->params;
-        $this->parseLines($lines [1]);
+        $this->parseLines($lines[1]);
         return $this->params;
     }
 
     private function parseLines($lines)
     {
+        $desc = [];
         foreach ($lines as $line) {
             $parsedLine = $this->parseLine($line); // Parse the line
             if ($parsedLine === false && !isset ($this->params ['description'])) {
@@ -87,9 +86,9 @@ class DocParser
                 $this->params [$param],
                 $value
             );
-            $this->params [$param] = $arr;
+            $this->params[$param] = $arr;
         } else {
-            $this->params [$param] = $value + $this->params [$param];
+            $this->params[$param] = $value;
         }
         return true;
     }
@@ -117,7 +116,14 @@ class DocParser
     private function formatParamOrReturn($string): string
     {
         $pos = strpos($string, ' ');
-        $type = substr($string, 0, $pos);
-        return '(' . $type . ')' . substr($string, $pos + 1);
+        if($pos)
+            $string = '(' . substr($string, 0, $pos) . ')' . substr($string, $pos + 1);
+        return $string;
+    }
+
+    public function setParamsEnpty()
+    {
+        $this->params = array();
+        return $this;
     }
 }
